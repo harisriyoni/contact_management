@@ -2,16 +2,18 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class RegisterRequest extends FormRequest
+class UserLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        //semua orang bisa post di true in karna semua orang bisa register.
+        // semua orang bisa login
         return true;
     }
 
@@ -22,11 +24,15 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
-        //VALIDATION
         return [
             'username' => ['required', 'max:100'],
             'password' => ['required', 'max:100'],
-            'name' => ['required', 'max:100'],
         ];
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response([
+            "errors" => $validator->getMessageBag(),
+        ], 400));
     }
 }
