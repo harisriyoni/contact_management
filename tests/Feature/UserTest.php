@@ -85,8 +85,8 @@ class UserTest extends TestCase
     {
         $this->seed([UserSeeder::class]);
         $this->post('/api/users/login', [
-            'username' => 'bayi1',
-            'password' => 'bayi',
+            'username' => 'test1',
+            'password' => 'test',
         ])
             ->assertStatus(401)
             ->assertJson([
@@ -99,13 +99,49 @@ class UserTest extends TestCase
     {
         $this->seed([UserSeeder::class]);
         $this->post('/api/users/login', [
-            'username' => 'bayi',
-            'password' => 'bayi1',
+            'username' => 'test',
+            'password' => 'test1',
         ])
             ->assertStatus(401)
             ->assertJson([
                 "errors" => [
                     'message' => 'username or password wrong',
+                ],
+            ]);
+    }
+    public function testGetSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->get('/api/users/current', [
+            'Authorization' => 'bayi',
+        ])->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    'username' => 'bayi',
+                    'name' => 'bayi',
+                ],
+            ]);
+    }
+    public function testUnauthorized()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->get('/api/users/current')
+            ->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+                    "message" => "unauthorized",
+                ],
+            ]);
+    }
+    public function testGetInvalidToken()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->get('/api/users/current', [
+            'Authorization' => 'halo',
+        ])->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+                    "message" => "unauthorized",
                 ],
             ]);
     }

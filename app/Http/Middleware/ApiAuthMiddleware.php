@@ -24,18 +24,18 @@ class ApiAuthMiddleware
         }
         $user = User::query()->where('token', $token)->first();
 
-        Auth::login($user);
         if (!$user) {
             $authenticate = false;
+        } else {
+            Auth::login($user);
         }
+
         if ($authenticate) {
             return $next($request);
         } else {
             return response()->json([
                 "errors" => [
-                    "message" => [
-                        "unauthorized",
-                    ],
+                    "message" => "unauthorized",
                 ],
             ])->setStatusCode(401);
         }

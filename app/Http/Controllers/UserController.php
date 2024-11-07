@@ -6,11 +6,11 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\UserResouce;
 use App\Models\User;
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -50,7 +50,10 @@ class UserController extends Controller
         $user->save();
         return new UserResouce($user);
     }
-    public function get(Request $request):UserResouce{
-
+    public function get(Request $request): UserResouce
+    {
+        //dapetin user login saat ini.
+        $user = Auth::user();
+        return new UserResouce($user);
     }
 }
