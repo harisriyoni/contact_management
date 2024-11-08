@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Contact;
+use Database\Seeders\ContactSeeder;
 use Database\Seeders\UserSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ContactTest extends TestCase
@@ -55,6 +55,51 @@ class ContactTest extends TestCase
                     ],
                     "email" => [
                         "The email field must be a valid email address."
+                    ]
+                ]
+            ]);
+    }
+    public function testGetSuccess()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->get("/api/contacts/$contact->id", [
+            'Authorization' => 'bayi',
+        ])->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'first_name' => 'bayi',
+                    'last_name' => 'bayi',
+                    'email' => 'bayi@gmail.com',
+                    'phone' => '0856863012345',
+                ]
+            ]);
+    }
+    public function testGetNotFound()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->get('/api/contacts/' . ($contact->id + 1), [
+            'Authorization' => 'bayi',
+        ])->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "not found"
+                    ]
+                ]
+            ]);
+    }
+    public function testGetOtherContact() {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->get("/api/contacts/$contact->id", [
+            'Authorization' => 'bayi2',
+        ])->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "not found"
                     ]
                 ]
             ]);

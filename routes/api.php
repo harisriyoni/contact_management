@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\ApiAuthMiddleware;
+use App\Models\Contact;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,5 +28,10 @@ Route::middleware(ApiAuthMiddleware::class)->group(function () {
     Route::get('/users/current', [UserController::class, 'get']);
     Route::patch('/users/current', [UserController::class, 'update']);
     Route::delete('/users/logout', [UserController::class, 'logout']);
+
     Route::post('/contacts', [ContactController::class, 'create']);
+    // regex number dimana supaya query di database ga sembarangan gaboleh karakter dll kecuali kita memang ada karakter biarkan saja atau ngga ya validasi lagi dengan karakter
+    //regex implementasi di uri
+    // Route::get('/contacts/{id:[0-9]}', [ContactController::class, 'get']);
+    Route::get('/contacts/{id}', [ContactController::class, 'get'])->where('id', '[0-9]+');
 });
