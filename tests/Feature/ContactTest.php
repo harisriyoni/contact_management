@@ -71,7 +71,7 @@ class ContactTest extends TestCase
                     'first_name' => 'bayi',
                     'last_name' => 'bayi',
                     'email' => 'bayi@gmail.com',
-                    'phone' => '0856863012345',
+                    'phone' => '085644587923',
                 ]
             ]);
     }
@@ -90,7 +90,8 @@ class ContactTest extends TestCase
                 ]
             ]);
     }
-    public function testGetOtherContact() {
+    public function testGetOtherContact()
+    {
         $this->seed([UserSeeder::class, ContactSeeder::class]);
         $contact = Contact::query()->limit(1)->first();
         $this->get("/api/contacts/$contact->id", [
@@ -104,4 +105,26 @@ class ContactTest extends TestCase
                 ]
             ]);
     }
+    public function testUpdateSuccess()
+    {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->put('/api/contacts/' . $contact->id, [
+            'first_name' => 'bayi2',
+            'last_name' => 'bayi2',
+            'email' => 'bayi2@gmail.com',
+            'phone' => '085645892145',
+        ], [
+            'Authorization' => 'bayi'
+        ])->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'first_name' => 'bayi2',
+                    'last_name' => 'bayi2',
+                    'email' => 'bayi2@gmail.com',
+                    'phone' => '085645892145',
+                ]
+            ]);
+    }
+    public function testUpdateFailed() {}
 }
