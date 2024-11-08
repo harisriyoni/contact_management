@@ -145,4 +145,49 @@ class UserTest extends TestCase
                 ],
             ]);
     }
+    public function testupdateNameSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $oldUser = User::query()->where('username', 'bayi')->first();
+        $this->patch('/api/users/current', [
+            'password' => 'baru',
+        ],
+            [
+                'Authorization' => 'bayi',
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    'username' => 'bayi',
+                    'name' => 'bayi',
+                ],
+            ]);
+        $newuser = User::query()->where('username', 'bayi')->first();
+        self::assertNotEquals($oldUser->password, $newuser->password);
+
+    }
+    public function testLogoutSuccsess()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->delete('/api/users/logout', headers: [
+            'Authorization' => 'bayi',
+        ])->assertStatus(200)
+            ->assertJson([
+                "data" => true,
+            ]);
+            $user = User::where('username', 'bayi')->first();
+            self::assertNull($user->token);
+    }
+    public function testLogoutFailed()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->delete('/api/users/logout', headers: [
+            'Authorization' => 'salah',
+        ])->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+                    "message" => "unauthorized",
+                ],
+            ]);
+    }
 }
